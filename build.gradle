@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.7'
 	id 'io.spring.dependency-management' version '1.1.7'
+    id 'groovy'
+    id 'idea'
 }
 
 group = 'com.bulletin_board'
@@ -23,8 +25,89 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.spockframework:spock-core:2.4-groovy-4.0'
+}
+
+sourceSets {
+    // 単体テスト用のソースセット
+    unitTest {
+        groovy {
+            srcDirs = ['src/test/unit/groovy']
+        }
+        resources {
+            srcDirs = ['src/test/unit/resources']
+        }
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+
+    // 結合テスト用のソースセット
+    integrationTest {
+        groovy {
+            srcDirs = ['src/test/integration/groovy']
+        }
+        resources {
+            srcDirs = ['src/test/integration/resources']
+        }
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+// 単体テスト用のconfiguration
+configurations {
+    unitTestImplementation.extendsFrom testImplementation
+    unitTestRuntimeOnly.extendsFrom testRuntimeOnly
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+// 単体テスト用のタスク
+tasks.register('unitTest', Test) {
+    description = 'Runs unit tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.unitTest.output.classesDirs
+    classpath = sourceSets.unitTest.runtimeClasspath
+    useJUnitPlatform()
+
+    outputs.upToDateWhen { false }
+    shouldRunAfter test
+}
+
+// 結合テスト用のタスク
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    useJUnitPlatform()
+
+    outputs.upToDateWhen { false }
+    shouldRunAfter unitTest
+}
+
+// checkタスクが両方のテストを実行するように設定
+tasks.named('check') {
+    dependsOn unitTest, integrationTest
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// IDEでカスタムソースセットを認識させる設定
+idea {
+    module {
+        testSourceDirs += sourceSets.unitTest.groovy.srcDirs
+        testSourceDirs += sourceSets.integrationTest.groovy.srcDirs
+        testResourceDirs += sourceSets.unitTest.resources.srcDirs
+        testResourceDirs += sourceSets.integrationTest.resources.srcDirs
+
+        // スコープ設定を追加
+        scopes.TEST.plus += [configurations.unitTestCompileClasspath]
+        scopes.TEST.plus += [configurations.unitTestRuntimeClasspath]
+        scopes.TEST.plus += [configurations.integrationTestCompileClasspath]
+        scopes.TEST.plus += [configurations.integrationTestRuntimeClasspath]
+    }
+}
+

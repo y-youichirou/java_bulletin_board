@@ -1,11 +1,13 @@
 package com.bulletin_board.domain.post;
 
-import com.bulletin_board.domain.post.value_object.*;
-
-import java.time.LocalDateTime;
+import com.bulletin_board.domain.post.valueObject.Content;
+import com.bulletin_board.domain.post.valueObject.CreateDateTime;
+import com.bulletin_board.domain.post.valueObject.PostId;
+import com.bulletin_board.domain.post.valueObject.PostStatus;
+import com.bulletin_board.domain.post.valueObject.Title;
+import com.bulletin_board.domain.post.valueObject.UpdateDateTime;
 
 public class Post {
-    @Id
     private PostId id;
 
     private Title title;
@@ -14,7 +16,7 @@ public class Post {
     private CreateDateTime createDateTime;
     private UpdateDateTime updateDateTime;
 
-    public Post(PostId id, Title title, PostStatus status, Content content) {
+    public Post(PostId id, Title title, PostStatus status, Content content, CreateDateTime createDateTime, UpdateDateTime updateDateTime) {
         this.id = id;
         this.title = title;
         this.status = status;
@@ -23,4 +25,27 @@ public class Post {
         this.updateDateTime = updateDateTime;
     }
 
+    public PostId getPostId() {
+        return this.id;
+    }
+
+    public Title getTitle() {
+        return this.title;
+    }
+
+    public PostStatus getStatus() {
+        return this.status;
+    }
+
+    public Content getContent() {
+        return this.content;
+    }
+
+    public CreateDateTime getCreateDateTime() {
+        return this.createDateTime;
+    }
+
+    public UpdateDateTime getUpdateDateTime() {
+        return this.updateDateTime;
+    }
 }

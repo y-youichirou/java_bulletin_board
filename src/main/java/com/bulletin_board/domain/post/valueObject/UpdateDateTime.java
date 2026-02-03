@@ -1,4 +1,4 @@
-package com.bulletin_board.domain.post.value_object;
+package com.bulletin_board.domain.post.valueObject;
 
 import java.time.LocalDateTime;
 
