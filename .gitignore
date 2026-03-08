@@ -26,6 +26,9 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### Libraries ###
+lib/
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -35,3 +38,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Windows ###
+*Zone.Identifier
+
